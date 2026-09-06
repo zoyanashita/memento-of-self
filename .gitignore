@@ -1,0 +1,15 @@
+# Raw captures and COLMAP/gsplat working data — huge, regenerable, not needed on laptop
+captures/
+
+# Nested git repos (your separate portfolio clone, if still present)
+portfolio/
+
+# Python cruft
+__pycache__/
+*.pyc
+
+touchdesigner/Backup/
+
+# Local-only generated files
+assets/_wsl_train_temp.sh
+assets/print_preview.png
