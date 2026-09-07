@@ -1,7 +1,8 @@
 """
 Memento of Self — GitHub Pages Upload
-Copies a render into the zoyanashita.github.io repo and pushes it,
-so it becomes publicly accessible for the QR code.
+Copies a render into this project's own repo (now that everything lives
+in one consolidated repo) and pushes it, so it becomes publicly
+accessible for the QR code.
 
 Usage: py -3.10 push_to_pages.py path/to/render.png folder_name
 """
@@ -12,13 +13,16 @@ import subprocess
 from pathlib import Path
 
 # --- Config ---
-# Path to your local clone of zoyanashita.github.io
-PAGES_REPO_DIR = Path(r"D:\Desktop\Memento of Self\portfolio")
-PROJECT_SUBFOLDER = "memento-of-self/captures"
-BASE_URL = "https://zoyanashita.github.io/portfolio/memento-of-self/captures"
+# The project root IS the repo now -- update GITHUB_USERNAME/REPO_NAME
+# to match your actual repo.
+PAGES_REPO_DIR = Path(__file__).resolve().parent
+PROJECT_SUBFOLDER = "web_renders"
+GITHUB_USERNAME = "zoyanashita"      # <-- update if needed
+REPO_NAME = "memento-of-self"        # <-- update to your actual repo name
+BASE_URL = f"https://{GITHUB_USERNAME}.github.io/{REPO_NAME}/{PROJECT_SUBFOLDER}"
 
 
-def push_render(image_path, folder_name):
+def push_render(image_path, folder_name, max_retries=3):
     image_path = Path(image_path)
     if not image_path.exists():
         print(f"ERROR: {image_path} not found")
@@ -33,16 +37,24 @@ def push_render(image_path, folder_name):
 
     rel_path = dest_path.relative_to(PAGES_REPO_DIR)
 
-    try:
-        subprocess.run(["git", "add", str(rel_path)], cwd=PAGES_REPO_DIR, check=True)
-        subprocess.run(
-            ["git", "commit", "-m", f"Add capture {folder_name}"],
-            cwd=PAGES_REPO_DIR, check=True
-        )
-        subprocess.run(["git", "push"], cwd=PAGES_REPO_DIR, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"ERROR: git operation failed: {e}")
-        return None
+    import time
+    for attempt in range(1, max_retries + 1):
+        try:
+            subprocess.run(["git", "add", str(rel_path)], cwd=PAGES_REPO_DIR, check=True)
+            subprocess.run(
+                ["git", "commit", "-m", f"Add capture {folder_name}"],
+                cwd=PAGES_REPO_DIR, check=True
+            )
+            subprocess.run(["git", "push"], cwd=PAGES_REPO_DIR, check=True)
+            break
+        except subprocess.CalledProcessError as e:
+            print(f"Attempt {attempt}/{max_retries} failed: {e}")
+            if attempt < max_retries:
+                print("Retrying in 5 seconds...")
+                time.sleep(5)
+            else:
+                print("ERROR: git push failed after all retries.")
+                return None
 
     url = f"{BASE_URL}/{folder_name}/{image_path.name}"
     print(f"Live at: {url}")
