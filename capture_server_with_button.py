@@ -125,8 +125,8 @@ def calibrate_once(cam_list):
     print(f"\nCalibrating exposure/white balance ({WARMUP_SECONDS}s warmup)...")
     for cam in cam_list:
         cam.BalanceWhiteAuto.SetValue(PySpin.BalanceWhiteAuto_Continuous)
-        cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Continuous)
-        cam.GainAuto.SetValue(PySpin.GainAuto_Continuous)
+        # cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Continuous)
+        # cam.GainAuto.SetValue(PySpin.GainAuto_Continuous)
         cam.TriggerMode.SetValue(PySpin.TriggerMode_Off)
         cam.BeginAcquisition()
 
@@ -168,11 +168,11 @@ def calibrate_once(cam_list):
 
 def apply_locked_settings(cam_list, settings):
     for i, cam in enumerate(cam_list):
-        cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
-        cam.GainAuto.SetValue(PySpin.GainAuto_Off)
+        # cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
+        # cam.GainAuto.SetValue(PySpin.GainAuto_Off)
         cam.BalanceWhiteAuto.SetValue(PySpin.BalanceWhiteAuto_Off)
-        cam.ExposureTime.SetValue(settings["exposure_time"])
-        cam.Gain.SetValue(settings["gain"])
+        # cam.ExposureTime.SetValue(settings["exposure_time"])
+        # cam.Gain.SetValue(settings["gain"])
         cam.BalanceRatioSelector.SetValue(PySpin.BalanceRatioSelector_Red)
         cam.BalanceRatio.SetValue(settings["wb_red"])
         cam.BalanceRatioSelector.SetValue(PySpin.BalanceRatioSelector_Blue)
